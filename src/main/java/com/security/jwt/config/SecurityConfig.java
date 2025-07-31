@@ -51,6 +51,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
             authorizeRequests.requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/signin").permitAll()
+                .requestMatchers("/signup").permitAll() // you can use a pattern as well /public/** or  /api/public/**
                 .anyRequest().authenticated());
         http.sessionManagement(
             session ->
