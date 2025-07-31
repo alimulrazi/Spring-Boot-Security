@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -78,19 +80,23 @@ public class SecurityConfig {
     public CommandLineRunner initData(UserDetailsService userDetailsService) {
         return args -> {
             JdbcUserDetailsManager manager = (JdbcUserDetailsManager) userDetailsService;
-            UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("123456"))
-                .roles("USER")
-                .build();
-            UserDetails admin = User.withUsername("admin")
-                //.password(passwordEncoder().encode("adminPass"))
-                .password(passwordEncoder().encode("admin123"))
-                .roles("ADMIN")
-                .build();
-
             JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-            userDetailsManager.createUser(user);
-            userDetailsManager.createUser(admin);
+
+            if (!manager.userExists("user")) {
+                UserDetails user = User.withUsername("user")
+                    .password(passwordEncoder().encode("123456"))
+                    .roles("USER")
+                    .build();
+                userDetailsManager.createUser(user);
+            }
+
+            if (!manager.userExists("admin")) {
+                UserDetails admin = User.withUsername("admin")
+                    .password(passwordEncoder().encode("admin123"))
+                    .roles("ADMIN")
+                    .build();
+                userDetailsManager.createUser(admin);
+            }
         };
     }
 
