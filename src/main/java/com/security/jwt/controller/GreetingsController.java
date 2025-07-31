@@ -79,4 +79,20 @@ public class GreetingsController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        Map<String,Object> profile = new HashMap<>();
+        profile.put("username",userDetails.getUsername());
+        profile.put("roles",userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList())
+        );
+        profile.put("message","This is the user profile");
+
+        return ResponseEntity.ok(profile);
+    }
 }
